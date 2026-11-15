@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.data/
+data/
+server/data/
+*.sqlite*
+*.db
+*.log
+__pycache__/
+*.pyc
+.venv/
+.DS_Store

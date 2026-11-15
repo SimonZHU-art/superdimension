@@ -1,0 +1,10 @@
+export const BOAT_RULES=Object.freeze({stages:3,woodPerStage:20,screwsPerStage:2,repairWood:20,upgrades:[{wood:40,screws:4},{wood:80,screws:8}],capacity:[1,2,3],levelNames:['基础船','一级加固','二级加固']});
+export const NORTH_DOCK={id:'north-dock',type:'voyage',label:'北岸船台',x:825,y:112,r:32};
+export const SCREW_POINTS=[{id:'screw-woods',type:'voyage',label:'拾起旧螺丝',x:565,y:112,r:22},{id:'screw-shore',type:'voyage',label:'拾起海岸螺丝',x:950,y:155,r:22}];
+export const THEME_TEMPLATES=Object.freeze({
+ basketball:{id:'basketball',version:1,name:'潮汐篮球岛',industry:'运动',size:{width:1100,height:780},spawn:{x:550,y:685},exit:{x:550,y:698},palette:{grass:'#91a96c',water:'#6eaaa9'},core:{id:'hoop',name:'投一球',kind:'shot',x:550,y:275,solid:{halfW:8,top:-60,bottom:8}},props:[{id:'bench',x:305,y:460,w:68,h:22},{id:'equipment',x:770,y:370,w:62,h:45}],secondary:{id:'shell',name:'听听海岸',x:235,y:590},exchange:{x:760,y:510},agents:[{x:795,y:555},{x:855,y:520}],sampleWorks:[],sound:'court'},
+ music:{id:'music',version:1,name:'海风音乐岛',industry:'音乐',size:{width:1100,height:780},spawn:{x:550,y:685},exit:{x:550,y:698},palette:{grass:'#819b79',water:'#759ca8'},core:{id:'instrument',name:'拨动琴弦',kind:'note',x:550,y:280,solid:{halfW:18,top:-42,bottom:7}},props:[{id:'bench',x:330,y:440,w:68,h:22},{id:'bench',x:700,y:440,w:68,h:22},{id:'equipment',x:780,y:280,w:50,h:42}],secondary:{id:'bell',name:'听听风铃',x:230,y:560},exchange:{x:735,y:570},agents:[{x:800,y:565},{x:850,y:520}],sampleWorks:[],sound:'harbour'}
+});
+export function themeTemplate(id,version=1){const t=THEME_TEMPLATES[id];if(!t||t.version!==version)throw new Error('主题模板不存在或版本不可用，请安全返航。');return t;}
+export function themeTrees(t){return Array.from({length:9},(_,i)=>{const a=i*.72;return [550+Math.cos(a)*390,385+Math.sin(a)*265,.85,'cedar']}).filter(([x,y])=>!(Math.abs(x-550)<100&&y>600));}
+export function themeCanWalk(t,x,y){return ((x-550)/460)**2+((y-385)/330)**2<1&&!themeTrees(t).some(([tx,ty])=>Math.abs(x-tx)<9&&y>ty-7&&y<ty+7)&&!(t.core.solid&&Math.abs(x-t.core.x)<t.core.solid.halfW&&y>t.core.y+t.core.solid.top&&y<t.core.y+t.core.solid.bottom)&&!t.props.some(p=>x>p.x-p.w/2-8&&x<p.x+p.w/2+8&&y>p.y-p.h-8&&y<p.y+8);}

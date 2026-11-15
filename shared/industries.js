@@ -1,0 +1,16 @@
+export const INDUSTRIES=[
+ {id:'fashion',name:'服装',description:'通过场景与风格偏好体验搭配服务。所有衣物与结果均为预设示例，不读取真实库存。',display:'穿搭陈列架',npc:{name:'织衣',coat:'#b27b8c',bio:'我喜欢从场景与颜色开始，帮你读懂示例搭配。'},skills:[{id:'outfit',name:'场景搭配',category:'搭配',inputs:['场景','风格'],outputType:'搭配卡',mode:'demo',modelAdapter:null},{id:'palette',name:'色彩建议',category:'色彩',inputs:['场景','风格'],outputType:'色彩卡',mode:'demo',modelAdapter:null}],packages:[{name:'出门准备',skills:['outfit','palette']}],scenes:['日常通勤','周末出游','朋友聚会'],preferences:['自然舒适','利落简洁','明亮活泼']},
+ {id:'education',name:'教培',description:'同一套服务窗口的教培结构示例，展示预设学习安排，不提供真实学习诊断或评估。',display:'学习计划陈列架',npc:{name:'知行',coat:'#7494a6',bio:'先说说你想练习什么，再一起看看示例学习路径。'},skills:[{id:'plan',name:'学习路径示例',category:'规划',inputs:['学习场景','节奏'],outputType:'学习计划卡',mode:'demo',modelAdapter:null},{id:'practice',name:'练习安排示例',category:'练习',inputs:['学习场景','节奏'],outputType:'练习卡',mode:'demo',modelAdapter:null}],packages:[{name:'一周练习包',skills:['plan','practice']}],scenes:['入门探索','复习巩固','项目实践'],preferences:['循序渐进','集中练习','轻松尝试']},
+];
+export function runIndustryDemo(industryId,skillIds,input){
+ const industry=INDUSTRIES.find(i=>i.id===industryId);if(!industry)throw new Error('行业不存在。');
+ if(!Array.isArray(skillIds)||!skillIds.length||skillIds.length>4||new Set(skillIds).size!==skillIds.length||skillIds.some(id=>!industry.skills.some(s=>s.id===id)))throw new Error('请选择提供的示例服务。');
+ if(!industry.scenes.includes(input?.scene)||!industry.preferences.includes(input?.preference)||!['细节','整体'].includes(input?.branch))throw new Error('请完成场景、偏好与 NPC 分支交流。');
+ const comfortable=input.preference==='自然舒适',bright=input.preference==='明亮活泼';
+ const result=industryId==='fashion'?{title:`${input.scene} · ${input.preference}`,items:[comfortable?'棉质衬衫、直筒长裤、轻便帆布鞋':bright?'浅色上衣、亮色配饰、简洁运动鞋':'素色衬衫、深色长裤、低饱和外套',input.scene==='周末出游'?'示例建议：带轻薄外套与便于行走的鞋。':input.scene==='朋友聚会'?'示例建议：用一件小配饰强调个人风格。':'示例建议：以活动方便、层次清晰为主。',input.branch==='细节'?'细节卡：配饰颜色呼应上衣，鞋款保持简洁。':'整体卡：上浅下深，使用两到三个主色。'],colors:bright?['#ead077','#b27b8c','#7494a6']:comfortable?['#dfd2b7','#68846b','#af7956']:['#eee6d6','#5b6875','#746e68']}:{title:`${input.scene} · ${input.preference}`,items:[input.scene==='入门探索'?'示例第 1–2 天：梳理基础概念，写下 3 个问题。':input.scene==='复习巩固'?'示例第 1–2 天：整理旧笔记，标出需要回顾的概念。':'示例第 1–2 天：选择一个小项目，拆分为 3 个任务。',input.preference==='集中练习'?'示例第 3–5 天：每天 30 分钟集中练习，保留错误记录。':'示例第 3–5 天：每天 15 分钟练习，逐步增加难度。',input.branch==='细节'?'示例复盘：列出一个问题、一条改进和一个下一步。':'示例复盘：展示练习成果，再调整下一周安排。'],colors:['#7494a6','#d5ba88','#68846b']};
+ if(industryId==='fashion'&&!skillIds.includes('outfit'))result.items=[`示例色彩建议：${input.preference}选用卡片上的三种主色。`,'配色比例示例：主色约 60%，辅助色约 30%，点缀色约 10%。','仅为预设配色练习，不是肤色评估。'];
+ if(industryId==='education'&&!skillIds.includes('plan'))result.items=[`示例练习主题：${input.scene}。`,'练习样例：先回忆一个概念，再写一个应用例子。',input.branch==='细节'?'每次保留一个问题与一条改进记录。':'将短练习分散到一周，最后回看笔记。'];
+ return {industryId,industryName:industry.name,skills:skillIds,input,mode:'demo',identity:'交互示例／预设成果',result,explanation:'按选项匹配预设内容；未调用模型，未读取真实库存或进行真实教学评估。',consultation:`我体验了${industry.name}的交互示例／预设成果（${input.scene}，${input.preference}），想咨询实际服务是否可提供。示例不代表已确认的服务承诺。`};
+}
+// Future adapter contract: execute({industry,skills,input,consent}) -> result.
+// This release deliberately supports only the explicit demo executor above.

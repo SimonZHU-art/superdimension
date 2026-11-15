@@ -1,0 +1,8 @@
+import React from 'react';
+import {DECORATIONS,LIFE_RULES} from '../shared/lifeConfig.js';
+import {dailySkeleton} from '../shared/dailyStories.js';
+import {STORY_RESIDENTS} from '../shared/storyResidents.js';
+export default function Backpack({life,onAction,onPlace}){
+ if(!life)return <div className="panel-body">正在打开背包…</div>;
+ return <div className="panel-body backpack"><div className="bag-resources"><span>🪵 木料 <strong>{life.materials}</strong></span><span>⚙ 螺丝 <strong>{life.boat?.screws||0}</strong></span><span>◇ 海岸宝物 <strong>{life.treasures||0}</strong></span></div>{life.daily?.items?.length>0&&<div className="daily-bag-items"><strong>今天暂存的物件</strong><p>{dailySkeleton(life.daily.skeleton).objects.filter(o=>life.daily.items.includes(o.id)).map(o=>({rope:'缆绳整理记录',sand:'眼镜',page:'画稿',marker:'研究标记',parcel:'书签'})[o.kind]||o.label).join('、')}</p><small>交给 {STORY_RESIDENTS[dailySkeleton(life.daily.skeleton).recipient].name}；傍晚未交付的东西会由居民收好。</small></div>}<div className="bag-grid">{DECORATIONS.map(d=>{const owned=life.owned.includes(d.id),placed=life.placements?.find(p=>p.id===d.id);return <article key={d.id}><span className={'bag-item '+d.id} aria-hidden="true">{({flowers:'🌷',windbell:'♧',banner:'⚑','fog-medal':'✦'})[d.id]}</span><strong>{d.name}</strong><small>{placed?'已放在小岛上':owned?'在背包里':d.reward?'守住雾夜后获得':`${LIFE_RULES.decorCost} 木料制作`}</small>{placed?<><button onClick={()=>onAction({action:'unplace',id:d.id})}>收回背包</button><button onClick={()=>onPlace(d.id)}>移动位置</button></>:owned?<button onClick={()=>onPlace(d.id)}>取出放置</button>:<button disabled={!!d.reward||life.materials<LIFE_RULES.decorCost} onClick={()=>onAction({action:'craft',id:d.id})}>{d.reward?'尚未获得':'制作'}</button>}</article>})}</div></div>;
+}
